@@ -53,9 +53,12 @@ export async function updateUser(req, res) {
     const username = req.params.username;
 
     const updated = await updateUserService({
-      username,
+      identifier: username,
       ...req.body
     });
+
+    if (!updated)
+      return res.status(404).json({ success: false, error: "User not found" });
 
     res.json({ success: true, user: updated });
   } catch (err) {

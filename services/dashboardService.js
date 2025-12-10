@@ -8,35 +8,50 @@ export async function getAllSubscriptionsService() {
 }
 
 // Get subscriptions for logged in user only
-export async function getMySubscriptionsService(username) {
+export async function getMySubscriptionsService(subscriberName) {
   const result = await pool.query(
     `SELECT * FROM subscription WHERE subscriber_name = $1 ORDER BY id DESC`,
-    [username]
+    [subscriberName]
   );
   return toCamel(result.rows);
 }
 
 // Dashboard aggregated data
-export async function getDashboardStatsService(username, role) {
+export async function getDashboardStatsService(subscriberName, role) {
 
   let query = `
     SELECT *
     FROM subscription
     ORDER BY id DESC
   `;
+  let values = [];
 
-  // If user is not admin → filter by their name
+  // If user is not admin → filter by their subscriber_name
   if (role !== "admin") {
     query = `
       SELECT *
       FROM subscription
-      WHERE subscriber_name = '${username}'
+      WHERE subscriber_name = $1
       ORDER BY id DESC
     `;
+    values = [subscriberName];
   }
 
-  const result = await pool.query(query);
-  return toCamel(result.rows);
+  const result = await pool.query(query, values);
+  const subscriptionSheet = toCamel(result.rows);
+
+  const totalValue = subscriptionSheet.reduce(
+    (sum, row) => sum + (parseFloat(row.price) || 0),
+    0,
+  );
+
+  return {
+    subscriptionSheet,
+    stats: {
+      totalValue: Number(totalValue.toFixed(2)),
+      totalSubscriptions: subscriptionSheet.length,
+    },
+  };
 }
 
 

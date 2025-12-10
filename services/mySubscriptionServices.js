@@ -1,6 +1,6 @@
 import pool from "../config/db.js";
 
-export async function getAllSubscriptionsService(username, role) {
+export async function getAllSubscriptionsService(subscriberName, role) {
   let query = `
       SELECT 
         subscription_no,
@@ -17,7 +17,7 @@ export async function getAllSubscriptionsService(username, role) {
   let values = [];
 
   // If user is NOT admin → show only their subscriptions
-if (role !== "admin") {
+  if (role !== "admin") {
     query = `
       SELECT 
         subscription_no,
@@ -31,9 +31,8 @@ if (role !== "admin") {
       WHERE subscriber_name = $1
       ORDER BY id DESC
     `;
-    values = [req.user.name];  // MATCH BY NAME, NOT USERNAME
-}
-
+    values = [subscriberName];
+  }
 
   const result = await pool.query(query, values);
   return result.rows;

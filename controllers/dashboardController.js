@@ -16,8 +16,8 @@ export async function getAllSubscriptions(req, res) {
 
 export async function getMySubscriptions(req, res) {
   try {
-    const username = req.user.username;
-    const data = await getMySubscriptionsService(username);
+    const subscriberName = req.user.name;
+    const data = await getMySubscriptionsService(subscriberName);
     res.json(data);
   } catch (err) {
     console.log("Error:", err);
@@ -27,10 +27,10 @@ export async function getMySubscriptions(req, res) {
 
 export async function getDashboardStats(req, res) {
   try {
-    const username = req.user.username;
+    const subscriberName = req.user.name;
     const role = req.user.role;
 
-    const data = await getDashboardStatsService(username, role);
+    const data = await getDashboardStatsService(subscriberName, role);
     res.json(data);
   } catch (err) {
     console.log(err);

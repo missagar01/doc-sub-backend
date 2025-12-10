@@ -13,9 +13,9 @@ function computeStatus(row) {
 
 export async function getAllSubscriptions(req, res) {
   try {
-    const { username, role } = req.user; // Coming from JWT middleware
+    const { name, role } = req.user; // Coming from JWT middleware
 
-    const rows = await getAllSubscriptionsService(username, role);
+    const rows = await getAllSubscriptionsService(name, role);
 
     // Transform for frontend
     const formatted = rows.map((s) => ({

@@ -1,5 +1,4 @@
 import pool from "../config/db.js";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export async function loginService(username, password) {
@@ -12,8 +11,7 @@ export async function loginService(username, password) {
 
   const user = result.rows[0];
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return null;
+  if (password !== user.password) return null;
 
   // update last login
   await pool.query(

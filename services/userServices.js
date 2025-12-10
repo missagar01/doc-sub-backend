@@ -1,5 +1,4 @@
 import pool from "../config/db.js";
-import bcrypt from "bcrypt";
 
 // FETCH USERS
 export async function getAllUsersService() {
@@ -14,7 +13,7 @@ export async function getAllUsersService() {
 
 // CREATE USER
 export async function createUserService({ username, name, email, password, role }) {
-  const hashed = await bcrypt.hash(password, 10);
+  const hashed = password;
 
   const query = `
     INSERT INTO users (username, name, email, password, role)
@@ -34,27 +33,56 @@ export async function createUserService({ username, name, email, password, role 
 }
 
 // UPDATE USER
-export async function updateUserService({ username, name, email, password, role }) {
-  let hashed = password;
+export async function updateUserService({
+  identifier,
+  username,
+  name,
+  email,
+  password,
+  role
+}) {
+  const lookup = identifier ?? username;
+  if (!lookup) return null;
 
-  // Only hash if needed
-  if (!password.startsWith("$2b$")) {
-    hashed = await bcrypt.hash(password, 10);
+  const isNumericId = /^\d+$/.test(String(lookup));
+  const identifierField = isNumericId ? "id" : "username";
+  const identifierValue = isNumericId ? Number(lookup) : lookup;
+
+  const existingQuery = `
+    SELECT id, username, name, email, role, password
+    FROM users
+    WHERE ${identifierField}=$1
+    LIMIT 1
+  `;
+  const existingResult = await pool.query(existingQuery, [identifierValue]);
+  if (existingResult.rows.length === 0) return null;
+
+  const existing = existingResult.rows[0];
+
+  const updatedUsername = username ?? existing.username;
+  const updatedName = name ?? existing.name;
+  const updatedEmail = email ?? existing.email;
+  const updatedRole = role ?? existing.role;
+
+  let updatedPassword = existing.password;
+  if (password) {
+    updatedPassword = password;
   }
 
   const query = `
     UPDATE users
-    SET name=$1, email=$2, password=$3, role=$4
-    WHERE username=$5
+    SET username=$1, name=$2, email=$3, password=$4, role=$5
+    WHERE ${identifierField}=$6
     RETURNING id, username, name, email, role, last_login
   `;
 
   const result = await pool.query(query, [
-    name,
-    email,
-    hashed,
-    role,
-    username
+    updatedUsername,
+    updatedName,
+    updatedEmail,
+    updatedPassword,
+    updatedRole,
+    identifierValue
   ]);
 
   return result.rows[0];
