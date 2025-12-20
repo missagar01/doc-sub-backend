@@ -20,7 +20,14 @@ export const getPendingApprovals = async () => {
 // --------------------------------------------------
 export const getApprovalHistory = async () => {
   const query = `
-    SELECT *
+    SELECT 
+      id,
+      approval_no,
+      subscription_no,
+      approval_status AS approval,
+      note,
+      approved_by,
+      requested_on
     FROM approval_history
     ORDER BY id DESC;
   `;

@@ -11,6 +11,9 @@ import userRoutes from "./routes/userRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import masterRoutes from "./routes/master.js";
 import userRoutes1 from "./routes/user.js";
+import settingsRoutes from "./routes/settings.routes.js";
+import documentRoutes from "./routes/document-routes/document.routes.js";
+import loanRoutes from "./routes/loan.routes.js";
 
 
 
@@ -18,8 +21,13 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true
+}));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Routes
 
@@ -33,6 +41,9 @@ app.use("/api/mySubscriptions", mySubscriptionRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dashboard-routes", dashboardRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/documents", documentRoutes);
+app.use("/api/loans", loanRoutes);
 
 app.get("/", (req, res) => {
   res.send("Repair System API Working 🚀");
