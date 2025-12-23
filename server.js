@@ -14,6 +14,7 @@ import userRoutes1 from "./routes/user.js";
 import settingsRoutes from "./routes/settings.routes.js";
 import documentRoutes from "./routes/document-routes/document.routes.js";
 import loanRoutes from "./routes/loan.routes.js";
+import paymentFmsRoutes from "./routes/payment-fms.routes.js";
 
 
 
@@ -44,6 +45,7 @@ app.use("/api/dashboard-routes", dashboardRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/loans", loanRoutes);
+app.use("/api/payment-fms", paymentFmsRoutes);
 
 app.get("/", (req, res) => {
   res.send("Repair System API Working 🚀");
