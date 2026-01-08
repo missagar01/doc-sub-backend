@@ -61,11 +61,12 @@ export async function updateSubscriptionForRenewal(data) {
             actual_1 = $1,
             actual_2 = NULL,
             renewal_count = renewal_count + 1,
-            renewal_status = $2
+            renewal_status = $2,
+            price = $4
         WHERE subscription_no = $3
     `;
 
-    const values = [data.actual_1, data.renewal_status, data.subscription_no];
+    const values = [data.actual_1, data.renewal_status, data.subscription_no, data.price];
 
     await pool.query(query, values);
 }

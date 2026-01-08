@@ -43,7 +43,8 @@ export async function submitRenewal(req, res) {
         await updateSubscriptionForRenewal({
             subscription_no,
             actual_1: new Date(),
-            renewal_status
+            renewal_status,
+            price
         });
 
         // Insert into subscription_renewals
