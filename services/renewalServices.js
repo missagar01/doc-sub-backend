@@ -4,13 +4,15 @@ import pool from "../config/db.js";
 export async function fetchPendingRenewals() {
     const query = `
         SELECT 
+            id,
             subscription_no,
             company_name,
             subscriber_name,
             subscription_name,
             price,
             frequency,
-            end_date
+            end_date,
+            planned_1
         FROM subscription
         WHERE planned_1 IS NOT NULL
           AND actual_1 IS NULL
@@ -22,9 +24,10 @@ export async function fetchPendingRenewals() {
 /* ---------------- FETCH RENEWAL HISTORY ---------------- */
 export async function fetchRenewalHistory() {
     const query = `
-        SELECT *
-        FROM subscription_renewals
-        ORDER BY timestamp DESC
+        SELECT sr.*, s.subscriber_name
+        FROM subscription_renewals sr
+        LEFT JOIN subscription s ON sr.subscription_no = s.subscription_no
+        ORDER BY sr.timestamp DESC
     `;
     const result = await pool.query(query);
     return result.rows;

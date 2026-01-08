@@ -34,9 +34,10 @@ router.get("/pending", async (req, res) => {
 router.get("/history", async (req, res) => {
   try {
     const query = `
-      SELECT *
-      FROM payment_history
-      ORDER BY id DESC;
+      SELECT ph.*, s.subscriber_name
+      FROM payment_history ph
+      LEFT JOIN subscription s ON ph.subscription_no = s.subscription_no
+      ORDER BY ph.id DESC;
     `;
 
     const result = await pool.query(query);
@@ -61,6 +62,7 @@ router.post("/submit", async (req, res) => {
       price,
       startDate,
       endDate,
+      planned_1,
       insuranceDocument
     } = req.body;
 
@@ -89,6 +91,7 @@ router.post("/submit", async (req, res) => {
         actual_1 = NULL,
         start_date = $2,
         end_date = $3,
+        planned_1 = $3,
         updated_at = NOW()
       WHERE subscription_no = $4;
     `;

@@ -21,15 +21,17 @@ export const getPendingApprovals = async () => {
 export const getApprovalHistory = async () => {
   const query = `
     SELECT 
-      id,
-      approval_no,
-      subscription_no,
-      approval_status AS approval,
-      note,
-      approved_by,
-      requested_on
-    FROM approval_history
-    ORDER BY id DESC;
+      ah.id,
+      ah.approval_no,
+      ah.subscription_no,
+      ah.approval_status AS approval,
+      ah.note,
+      ah.approved_by,
+      ah.requested_on,
+      s.subscriber_name
+    FROM approval_history ah
+    LEFT JOIN subscription s ON ah.subscription_no = s.subscription_no
+    ORDER BY ah.id DESC;
   `;
   const res = await pool.query(query);
   return res.rows;
